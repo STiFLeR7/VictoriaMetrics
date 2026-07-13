@@ -75,7 +75,7 @@ groups:
             Consider to limit the ingestion rate, decrease retention or scale the disk space if possible."
 
       - alert: RequestErrorsToAPI
-        expr: increase(vm_http_request_errors_total{path=~".+"}[5m]) > 0
+        expr: increase(vm_http_request_errors_total{path=~".+", path!="*"}[5m]) > 0
         for: 15m
         labels:
           severity: warning
@@ -84,6 +84,18 @@ groups:
           dashboard: "{{ $externalURL }}/d/oS7Bi_0Wz?viewPanel=52&var-instance={{ $labels.instance }}"
           summary: "Too many errors served for {{ $labels.job }} path {{ $labels.path }} (instance {{ $labels.instance }})"
           description: "Requests to path {{ $labels.path }} are receiving errors.
+            Please verify if clients are sending correct requests."
+
+      - alert: RequestErrorsToUnexpectedPaths
+        expr: sum(increase(vm_http_request_errors_total{path="*"}[5m])) by(job, instance, reason) > 0
+        for: 15m
+        labels:
+          severity: warning
+          show_at: dashboard
+        annotations:
+          dashboard: "{{ $externalURL }}/d/oS7Bi_0Wz?viewPanel=52&var-instance={{ $labels.instance }}"
+          summary: "Too many errors served for {{ $labels.job }} with reason {{ $labels.reason }} (instance {{ $labels.instance }})"
+          description: "Requests are failing with reason {{ $labels.reason }}.
             Please verify if clients are sending correct requests."
 
       - alert: RPCErrors
