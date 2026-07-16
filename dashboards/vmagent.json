@@ -4586,7 +4586,7 @@
             "type": "prometheus",
             "uid": "$ds"
           },
-          "description": "Average duration of fsync system calls. High latency indicates storage I/O that cannot keep up with the write rate. This metric measures only the persistence path (fsyncing to disk), not the page-cache write phase, making it a direct signal for disk performance. Computed as rate(vm_filestream_fsync_duration_seconds_total) / rate(vm_filestream_fsync_calls_total). See https://github.com/VictoriaMetrics/VictoriaMetrics/issues/10432",
+          "description": "Average duration of fsync system calls.\n\n**Lower is better.**\n\nHigh latency indicates that filesystem that can't keep up with persisting data on disk. Anomalous spikes or constantly elevated values might be a sign of IO contention, limiting the system's ability to persist data on disk fast enough.",
           "fieldConfig": {
             "defaults": {
               "color": {
